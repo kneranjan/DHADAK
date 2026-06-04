@@ -1,0 +1,358 @@
+`
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans, sans-serif); }
+  body { background: #f0f4f8; }
+  .portal-bg {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f5f8ff 15%, #2563eb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 16px;
+    position: relative;
+  }
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 32px 0 rgba(37,99,235,0.10);
+    padding: 50px 54px 46px;
+    min-width: 320px;
+    max-width: 380px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+  .card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .card .subtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .role-grid {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  .role-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px 18px;
+    border-radius: 14px;
+    transition: background 0.15s;
+  }
+  .role-btn:hover { background: #eff6ff; }
+  .role-btn.selected { background: #dbeafe; }
+  .role-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0eaff;
+    overflow: hidden;
+  }
+  .role-btn.doctor .role-avatar { background: #dbeafe; }
+  .role-btn.patient .role-avatar { background: #fde8d8; }
+  .role-label {
+    font-size: 13px;
+    color: #475569;
+    font-weight: 500;
+  }
+
+  /* Login card */
+  .login-card { display: none; }
+  .login-card.active { display: block; }
+  .selection-card.hidden { display: none; }
+
+  .back-btn {
+    background: none;
+    border: none;
+    color: #2563eb;
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+  .back-btn:hover { background: #eff6ff; }
+  .help-btn {
+    background: none;
+    border: none;
+    color: #2563eb;
+    font-size: 18px;
+    cursor: pointer;
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid #2563eb;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .login-greeting {
+    text-align: center;
+    margin-bottom: 22px;
+    margin-top: 8px;
+  }
+  .login-greeting .hi {
+    font-size: 14px;
+    color: #64748b;
+  }
+  .login-greeting .prompt {
+    font-size: 13px;
+    color: #94a3b8;
+  }
+  .input-wrap {
+    position: relative;
+    margin-bottom: 14px;
+  }
+  .input-wrap input {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding: 10px 36px 10px 4px;
+    font-size: 14px;
+    color: #1e293b;
+    background: transparent;
+    outline: none;
+    border-radius: 0;
+    transition: border-color 0.15s;
+  }
+  .input-wrap input:focus { border-bottom-color: #2563eb; }
+  .input-wrap input::placeholder { color: #cbd5e1; }
+  .input-icon {
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 15px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .enter-btn {
+    width: 100%;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.15s;
+  }
+  .enter-btn:hover { background: #2563eb; }
+  .enter-btn:active { background: #1d4ed8; }
+  .error-msg {
+    color: #ef4444;
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+  .success-card {
+    display: none;
+    text-align: center;
+    padding: 16px 0 8px;
+  }
+  .success-card .tick {
+    width: 56px; height: 56px;
+    background: #dcfce7;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 28px;
+  }
+  .success-card h3 { font-size: 18px; color: #16a34a; margin-bottom: 6px; }
+  .success-card p { font-size: 13px; color: #64748b; }
+  .logout-btn {
+    margin-top: 16px;
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 20px;
+    font-size: 13px;
+    color: #475569;
+    cursor: pointer;
+  }
+  .logout-btn:hover { background: #f8fafc; }
+</style>
+
+<div class="portal-bg">
+
+  <!-- Selection Card -->
+  <div class="card selection-card" id="selectionCard">
+    <h1 style="text-align: center; color: #2563eb; font-weight: 800; margin-bottom: 10px;">DHADAK</h1>
+    <h2>Login Portal</h2>
+    <p class="subtitle">Select your role to continue</p>
+    <div class="role-grid">
+      <button class="role-btn doctor" onclick="selectRole('doctor')">
+        <div class="role-avatar">
+          <svg viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+              <path d="M679.2 839.4h-54.5c-11 0-20-9-20-20v-77.7h94.5v77.7c0 11-9 20-20 20z" fill="#F9C0C0"></path>
+              <path d="M522.8 266.4h-31.5c-5.9 0-10.8-4.8-10.8-10.8v-20.3c0-1.5-1.2-2.8-2.8-2.8h-20.3c-5.9 0-10.8-4.8-10.8-10.8v-31.5c0-5.9 4.8-10.8 10.8-10.8h0.4v8h-0.4c-1.5 0-2.8 1.3-2.8 2.8v31.5c0 1.5 1.3 2.8 2.8 2.8h20.3c5.9 0 10.8 4.8 10.8 10.8v20.3c0 1.5 1.3 2.8 2.8 2.8h31.5c1.5 0 2.8-1.3 2.8-2.8v-20.3c0-5.9 4.8-10.8 10.8-10.8h20.3c1.5 0 2.8-1.3 2.8-2.8v-31.5c0-1.5-1.2-2.8-2.8-2.8h-20.3c-5.9 0-10.8-4.8-10.8-10.8v-20.3c0-1.5-1.2-2.8-2.8-2.8h-31.5c-1.5 0-2.8 1.3-2.8 2.8v20.3c0 5.9-4.8 10.8-10.8 10.8h-5.1v-8h5.1c1.5 0 2.8-1.2 2.8-2.8v-20.3c0-5.9 4.8-10.8 10.8-10.8h31.5c5.9 0 10.8 4.8 10.8 10.8v20.3c0 1.5 1.2 2.8 2.8 2.8h20.3c5.9 0 10.8 4.8 10.8 10.8v31.5c0 5.9-4.8 10.8-10.8 10.8h-20.3c-1.5 0-2.8 1.2-2.8 2.8v20.3c0 6-4.9 10.8-10.8 10.8z" fill="#CE0202"></path>
+              <path d="M510.3 581.6c48.1 0 92.1 9.7 130.9 28.9 36.6 18.1 68.4 44.6 94.5 78.7 25.3 33.1 44.9 72.9 58.2 118.3 11.9 40.7 18.5 84.9 19.7 131.6H207c1.2-46.7 7.8-90.9 19.7-131.6 13.3-45.3 32.9-85.1 58.2-118.3 26.1-34.1 57.9-60.6 94.5-78.7 38.7-19.2 82.7-28.9 130.9-28.9m0-15C302.2 566.6 191.8 740 191.8 954h636.9c0-214-110.4-387.4-318.4-387.4z" fill="#999999"></path>
+              <path d="M513.4 823.2c-12.2 0-22-9.9-22-22 0-12.2 9.9-22 22-22 12.2 0 22 9.9 22 22 0.1 12.1-9.8 22-22 22z m0-36.1c-7.7 0-14 6.3-14 14s6.3 14 14 14 14-6.3 14-14c0.1-7.7-6.2-14-14-14zM513.4 911.3c-12.2 0-22-9.9-22-22s9.9-22 22-22c12.2 0 22 9.9 22 22s-9.8 22-22 22z m0-36.1c-7.7 0-14 6.3-14 14s6.3 14 14 14 14-6.3 14-14-6.2-14-14-14zM516.5 544.9h-18.9c-42.8 0-83.2-16.8-113.7-47.3s-47.3-70.9-47.3-113.7v-66.3h333.3c4.2 0 7.6 3.4 7.6 7.6v58.7c0 42.8-16.8 83.2-47.3 113.7-30.5 30.5-70.9 47.3-113.7 47.3zM351.6 332.6v51.3c0 38.8 15.2 75.4 42.9 103.1 27.7 27.7 64.3 42.9 103.1 42.9h18.9c38.8 0 75.4-15.2 103.1-42.9 27.7-27.7 42.9-64.3 42.9-103.1v-51.3H351.6z" fill="#999999"></path>
+              <path d="M677.5 332.6H336.6V134.7c0-13.3 7.9-25.5 20-31C386.9 90 447 67 510.3 67c63.1 0 119.8 22.8 148 36.5 11.7 5.6 19.2 17.7 19.2 30.7v198.4z m-325.9-15h310.9V134.2c0-7.3-4.2-14-10.8-17.1-27-13.1-81.4-35-141.5-35-60.5 0-118.3 22.1-147.4 35.3-6.8 3.1-11.2 9.9-11.2 17.4v182.8zM513.4 692.6c-49 0-88.9-39.9-88.9-88.9v-20.2h8v20.2c0 44.6 36.3 80.9 80.9 80.9s80.9-36.3 80.9-80.9v-17h8v17c0.1 49-39.8 88.9-88.9 88.9zM679.2 840.2H613c-13.2 0-24-10.8-24-24V726h114.2v90.2c0 13.2-10.8 24-24 24zM597 734v82.2c0 8.8 7.2 16 16 16h66.2c8.8 0 16-7.2 16-16V734H597z" fill="#999999"></path>
+              <path d="M650.1 731.1h-8v-19.6c0-7.5-6.1-13.5-13.5-13.5s-13.5 6.1-13.5 13.5h-8c0-11.9 9.7-21.5 21.5-21.5s21.5 9.7 21.5 21.5v19.6z" fill="#999999"></path>
+              <path d="M562.3 763.7c-29.1 0-52.8-23.7-52.8-52.8v-22.3h8v22.3c0 24.7 20.1 44.8 44.8 44.8s44.8-20.1 44.8-44.8h8c0 29.1-23.7 52.8-52.8 52.8z" fill="#999999"></path>
+            </g>
+          </svg>
+        </div>
+        <span class="role-label">Doctor</span>
+      </button>
+      <button class="role-btn patient" onclick="selectRole('patient')">
+        <div class="role-avatar">
+          <svg version="1.1" id="Icons" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve" class="icon">
+            <style type="text/css"> .st0{fill:none;stroke:#999999;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;} </style>
+            <path class="st0" d="M27,7L27,7c-2.6-2.7-6.9-2.7-9.5,0l-1.3,1.4c-0.1,0.1-0.4,0.1-0.5,0L14.4,7C11.8,4.3,7.6,4.3,5,7l0,0 c-2.6,2.7-2.6,7.1,0,9.8l1.6,1.6l9.2,9.5c0.1,0.1,0.4,0.1,0.5,0l9.2-9.5l1.6-1.6C29.7,14.1,29.7,9.7,27,7z"></path>
+            <polyline class="st0" points="9,15 12,15 14,13 16,17 18,12 20,15 23,15 "></polyline>
+          </svg>
+        </div>
+        <span class="role-label">Patient</span>
+      </button>
+    </div>
+    <div style="text-align: center; margin-top: 20px;">
+      <a href="#" class="btn-mission" style="color: #2563eb; text-decoration: none; font-size: 14px; font-weight: 600; border: 1px solid #2563eb; padding: 8px 16px; border-radius: 8px; display: inline-block; transition: all 0.3s;">Our Mission</a>
+    </div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="card login-card" id="loginCard" style="position:relative;">
+    <button class="back-btn" onclick="goBack()">&#8249;</button>
+  
+
+    <div id="loginForm">
+      <div class="login-greeting">
+        <h1 style="color: #2563eb; font-weight: 800; margin-bottom: 10px;">DHADAK</h1>
+        <div class="hi" id="greetingHi">Hello, Doctor!</div>
+        <div class="prompt">Enter your credentials</div>
+      </div>
+
+      <div class="input-wrap">
+        <input type="text" id="usernameInput" placeholder="CRM / Login" autocomplete="off"/>
+        <span class="input-icon">&#128100;</span>
+      </div>
+      <div class="input-wrap">
+        <input type="password" id="passwordInput" placeholder="Password"/>
+        <span class="input-icon" id="togglePwd" onclick="togglePwd()" style="cursor:pointer;">&#128065;</span>
+      </div>
+
+      <button class="enter-btn" onclick="doLogin()">ENTER</button>
+      <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <div class="success-card" id="successCard">
+      <div class="tick">&#10003;</div>
+      <h3 id="successName">Welcome!</h3>
+      <p id="successRole">Login Successful</p>
+      <button class="logout-btn" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentRole = '';
+
+function selectRole(role) {
+  currentRole = role;
+  document.getElementById('selectionCard').classList.add('hidden');
+  document.getElementById('loginCard').classList.add('active');
+  const greet = role === 'doctor' ? 'Hello, Doctor!' : 'Hello, Patient!';
+  document.getElementById('greetingHi').textContent = greet;
+  const placeholder = role === 'doctor' ? 'CRM' : 'CPF / Login';
+  document.getElementById('usernameInput').placeholder = placeholder;
+  document.getElementById('errorMsg').textContent = '';
+  document.getElementById('usernameInput').value = '';
+  document.getElementById('passwordInput').value = '';
+}
+
+function goBack() {
+  document.getElementById('selectionCard').classList.remove('hidden');
+  document.getElementById('loginCard').classList.remove('active');
+  document.getElementById('loginForm').style.display = '';
+  document.getElementById('successCard').style.display = 'none';
+}
+
+function togglePwd() {
+  const inp = document.getElementById('passwordInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function doLogin() {
+  const user = document.getElementById('usernameInput').value.trim();
+  const pass = document.getElementById('passwordInput').value.trim();
+  const err = document.getElementById('errorMsg');
+
+  if (!user || !pass) { 
+    err.textContent = 'Aiyo Iyer Wrong Password or Username. Try again!'; 
+    return; 
+  }
+
+  // DOCTOR LOGIN
+  if (currentRole === 'doctor') {
+    if (user === 'admin' && pass === 'admin') {
+      localStorage.setItem("role", "doctor");
+      window.location.href = "patient_selector.html";
+    } else {
+      err.textContent = 'Invalid Doctor Credentials';
+    }
+  } 
+  
+  // PATIENT LOGIN
+  else if (currentRole === 'patient') {
+    const patients = [
+      { name: 'Aarav', pass: '123', id: 'P-101' },
+      { name: 'Priya', pass: '123', id: 'P-102' },
+      { name: 'Rajan', pass: '123', id: 'P-103' }
+    ];
+    
+    const match = patients.find(p => p.name.toLowerCase() === user.toLowerCase() && p.pass === pass);
+    
+    if (match) {
+      localStorage.setItem("role", "patient");
+      localStorage.setItem("selectedPatient", JSON.stringify({ id: match.id, name: match.name }));
+      window.location.href = "patient_form.html";
+    } else {
+      err.textContent = 'Invalid Patient Credentials';
+    }
+  }
+}
+ 
+function doLogout() {
+  goBack();
+}
+
+document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('usernameInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+

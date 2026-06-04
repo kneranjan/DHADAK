@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Patient Clinical Form - DHADAK</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.2rem; /* Larger text for easy reading */
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .brand-header {
+            color: #2563eb;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 1.3rem;
+        }
+        .form-control {
+            font-size: 1.2rem;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: none;
+        }
+        .btn-submit {
+            background-color: #2563eb;
+            color: white;
+            font-weight: 700;
+            font-size: 1.4rem;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        .doctor-info {
+            background-color: #eff6ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .instruction-box {
+            background-color: #fff7ed;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .video-placeholder {
+            width: 100%;
+            height: 300px;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-container">
+        <h1 class="brand-header">DHADAK</h1>
+        <h3 class="text-center mb-4">Daily Health Update</h3>
+
+        <!-- Treating Doctor Info -->
+        <div class="doctor-info">
+            <h5 class="mb-2"><i class="fas fa-user-md me-2"></i>Treating Doctor</h5>
+            <p class="mb-1"><strong>Name:</strong> Dr. Dhanush S</p>
+            <p class="mb-0"><strong>Phone:</strong> 7822085564</p>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="instruction-box">
+            <h5 class="mb-2"><i class="fas fa-info-circle me-2"></i>Device Instructions</h5>
+            <p>Please ensure the pulse oximeter is placed firmly on your index finger for accurate readings.</p>
+            <div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://fcrit-my.sharepoint.com/personal/3024121_extc_fcrit_ac_in/_layouts/15/embed.aspx?UniqueId=f692bd57-a9a4-4378-93e0-cf438bb20641&nav=%7B%22playbackOptions%22%3A%7B%22startTimeInSeconds%22%3A0%7D%7D&embed=%7B%22af%22%3Atrue%2C%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="miniproject.mp4" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
+        </div>
+
+        <form id="clinicalForm">
+            <div class="mb-4">
+                <label class="form-label">Patient Name</label>
+                <input type="text" id="displayPatientName" class="form-control" readonly disabled>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Weight (kg)</label>
+                    <select id="weight" class="form-select form-control" required>
+                        <option value="" disabled selected>Select Weight</option>
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label">Height (cm)</label>
+                    <select id="height" class="form-select form-control" required>
+                        <option value="" disabled selected>Select Height</option>
+                        <!-- Options generated by JS -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">How are you feeling today?</label>
+                <select id="symptoms" class="form-select form-control" required>
+                    <option value="" disabled selected>Choose an option</option>
+                    <option value="Normal">I am feeling normal/fine</option>
+                    <option value="Chest Pain">Mild Chest Pain</option>
+                    <option value="Shortness of Breath">Shortness of Breath</option>
+                    <option value="Palpitations">Heart Palpitations</option>
+                    <option value="Dizziness">Dizziness / Lightheadedness</option>
+                    <option value="Fatigue">Extreme Fatigue</option>
+                    <option value="Swelling">Swelling in legs/ankles</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit">SAVE & GO TO DASHBOARD</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Generate Weight Options (30 to 150 kg)
+    const weightSelect = document.getElementById('weight');
+    for (let i = 30; i <= 150; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = i + ' kg';
+        weightSelect.appendChild(opt);
+    }
+
+    // Generate Height Options (120 to 200 cm)
+    const heightSelect = document.getElementById('height');
+    for (let i = 120; i <= 200; i++) {
+        let opt = document.createElement('option');
+        opt.value = i;
+        opt.innerHTML = i + ' cm';
+        heightSelect.appendChild(opt);
+    }
+
+    // Load patient data from localStorage
+    const selectedPatient = JSON.parse(localStorage.getItem("selectedPatient") || '{}');
+    if (!selectedPatient.name) {
+        window.location.href = 'index.html';
+    }
+    document.getElementById('displayPatientName').value = selectedPatient.name;
+
+    document.getElementById('clinicalForm').onsubmit = function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            weight: document.getElementById('weight').value,
+            height: document.getElementById('height').value,
+            symptoms: document.getElementById('symptoms').value,
+            timestamp: new Date().toLocaleString()
+        };
+
+        // Save data for this specific patient
+        localStorage.setItem(`patient_data_${selectedPatient.id}`, JSON.stringify(formData));
+        
+        // Redirect to patient dashboard
+        window.location.href = 'dashboard_patient.html';
+    };
+</script>
+
+</body>
+</html>

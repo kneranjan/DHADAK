@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>DHADAK Dashboard V2</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.39.0/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+    <style>
+        .content {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+
+        /* MEDICAL FORM STYLING - Hidden on screen */
+        #printable-medical-form {
+            display: none;
+        }
+
+        @media print {
+            #printable-medical-form {
+                display: block !important;
+                font-family: 'Heebo', sans-serif;
+                color: #000;
+                margin-bottom: 30px;
+            }
+
+            .form-header {
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+
+            .form-section {
+                margin-bottom: 20px;
+                border: 1px solid #000;
+                padding: 15px;
+            }
+
+            .form-section-title {
+                font-weight: bold;
+                text-transform: uppercase;
+                background: #eee;
+                padding: 5px 10px;
+                margin: -15px -15px 15px -15px;
+                border-bottom: 1px solid #000;
+                font-size: 14px;
+            }
+
+            .form-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 15px;
+            }
+
+            .form-item label {
+                display: block;
+                font-size: 10px;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+
+            .form-item span {
+                font-size: 14px;
+                border-bottom: 1px dotted #000;
+                display: block;
+                min-height: 20px;
+            }
+
+            /* Medication Table */
+            .med-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+
+            .med-table th, .med-table td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
+                font-size: 12px;
+            }
+
+            .med-table th {
+                background: #eee;
+            }
+
+            .sig-area {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 40px;
+            }
+
+            .sig-box {
+                border-top: 1px solid #000;
+                width: 250px;
+                text-align: center;
+                padding-top: 5px;
+                font-size: 12px;
+            }
+
+            /* Option C Fine-tuning */
+            .navbar, .btn-group, #saveBtn, #lastSaved, .back-to-top, .footer, .btn-primary, #spinner, .no-print {
+                display: none !important;
+            }
+
+            .container-fluid { padding: 0 !important; margin: 0 !important; }
+            .bg-light { 
+                background: transparent !important; 
+                border: 1px solid #eee !important;
+                margin-bottom: 15px !important;
+            }
+            
+            iframe {
+                display: block !important;
+                width: 100% !important;
+                height: 350px !important;
+                visibility: visible !important;
+            }
+
+            body::before { display: none !important; } /* Remove old title */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hidden Medical Form for PDF -->
+    <div id="printable-medical-form">
+        <div class="form-header">
+            <h2 class="mb-0">DHADAK MEDICAL ASSESSMENT & PRESCRIPTION</h2>
+            <p class="mb-0 text-muted">Clinical Record for Tele-Monitoring</p>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-title">Patient Information</div>
+            <div class="form-grid">
+                <div class="form-item">
+                    <label>PATIENT NAME</label>
+                    <span id="form-patient-name">--</span>
+                </div>
+                <div class="form-item">
+                    <label>PATIENT ID</label>
+                    <span id="form-patient-id">--</span>
+                </div>
+                <div class="form-item">
+                    <label>ASSESSMENT DATE/TIME</label>
+                    <span id="form-date">--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-title">Medication & Treatment Plan</div>
+            <table class="med-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Medicine Name / Dosage</th>
+                        <th>Frequency</th>
+                        <th>Duration</th>
+                        <th style="width: 20%;">Doctor's Initial</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="height: 30px;"></td><td></td><td></td><td></td></tr>
+                    <tr><td style="height: 30px;"></td><td></td><td></td><td></td></tr>
+                    <tr><td style="height: 30px;"></td><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-section">
+            <div class="form-section-title">Clinical Observations (Vitals Analysis)</div>
+            <div id="form-notes" style="font-size: 13px; white-space: pre-wrap; min-height: 100px;">--</div>
+        </div>
+
+        <div class="sig-area">
+            <div class="sig-box">Doctor's Signature & Stamp</div>
+            <div class="sig-box">Patient/Guardian Signature</div>
+        </div>
+        
+        <div style="page-break-after: always;"></div>
+        <h4 class="text-center mb-4">SUPPLEMENTARY VITAL TRENDS & GRAPHS</h4>
+    </div>
+    <div class="container-fluid position-relative bg-white p-0">
+        <!-- Content Start -->
+        <div class="content">
+            <!-- Navbar Start -->
+            <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
+                <a href="dashboard_doctor.html" class="navbar-brand d-flex d-lg-none me-4">
+                    <h2 class="text-primary mb-0"><i class="fa fa-hashtag"></i></h2>
+                </a>
+                <div class="navbar-nav align-items-center ms-auto">
+                    <!-- Time Range Selector -->
+                    <div class="nav-item dropdown me-3">
+                        <a href="#" class="nav-link dropdown-toggle btn btn-outline-primary btn-sm" data-bs-toggle="dropdown">
+                            <i class="fa fa-clock me-2"></i>Time Range
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">
+                            <a href="javascript:void(0)" class="dropdown-item" onclick="updateTimeRange('now-1h', 'now')">Last 1 Hour</a>
+                            <a href="javascript:void(0)" class="dropdown-item" onclick="updateTimeRange('now-6h', 'now', 'Last 6 Hours')">Last 6 Hours</a>
+                            <a href="javascript:void(0)" class="dropdown-item" onclick="updateTimeRange('now-24h', 'now')">Last 24 Hours</a>
+                            <a href="javascript:void(0)" class="dropdown-item" onclick="updateTimeRange('now-7d', 'now')">Last 7 Days</a>
+                            <hr class="dropdown-divider">
+                            <a href="javascript:void(0)" class="dropdown-item" onclick="zoomOut()">
+                                <i class="fa fa-search-minus me-2"></i>Zoom Out
+                            </a>
+                        </div>
+                    </div>
+                    <button onclick="prepareAndPrint()" class="btn btn-outline-primary btn-sm me-3">
+                        <i class="fa fa-print me-2"></i>Generate PDF Report
+                    </button>
+                    <a href="patient_selector.html" class="btn btn-primary btn-sm">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Patient List
+                    </a>
+                </div>
+            </nav>
+            <!-- Navbar End -->
+
+            <!-- Row 1: 3 Gauges -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-md-4 gauge-col">
+                        <div class="bg-light text-center rounded p-4">
+                            <h6 class="mb-3">Signal Quality <a href="http://localhost:3000/d/adql66s/ppg-patient-monitor?viewPanel=panel-5&orgId=1" target="_blank" class="ms-2 text-primary" title="Open in Grafana" style="font-size: 12px;"><i class="fa fa-external-link-alt"></i></a></h6>
+                            <div class="gauge-placeholder d-flex align-items-center justify-content-center bg-secondary text-white rounded" style="height: 350px;">
+                                <iframe src="http://localhost:3000/d/adql66s/ppg-patient-monitor?orgId=1&from=1776219901860&to=1776241501860&timezone=browser&viewPanel=panel-5&theme=light&kiosk&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 gauge-col">
+                        <div class="bg-light text-center rounded p-4">
+                            <h6 class="mb-3">Heart Rate <a href="http://localhost:3000/d/adql66s/ppg-patient-monitor?viewPanel=panel-5&orgId=1" target="_blank" class="ms-2 text-primary" title="Open in Grafana" style="font-size: 12px;"><i class="fa fa-external-link-alt"></i></a></h6>
+                            <div class="gauge-placeholder d-flex align-items-center justify-content-center bg-secondary text-white rounded" style="height: 350px;">
+                                <iframe src="http://localhost:3000/d/adql66s/ppg-patient-monitor?orgId=1&from=1776219901860&to=1776241501860&timezone=browser&viewPanel=panel-5&theme=light&kiosk&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 gauge-col">
+                        <div class="bg-light text-center rounded p-4">
+                            <h6 class="mb-3">Blood Oxygen (SpO2) <a href="http://localhost:3000/d/adql66s/ppg-patient-monitor?viewPanel=panel-3&orgId=1" target="_blank" class="ms-2 text-primary" title="Open in Grafana" style="font-size: 12px;"><i class="fa fa-external-link-alt"></i></a></h6>
+                            <div class="gauge-placeholder d-flex align-items-center justify-content-center bg-secondary text-white rounded" style="height: 350px;">
+                                <iframe src="http://localhost:3000/d/adql66s/ppg-patient-monitor?orgId=1&from=1776219901860&to=1776241501860&timezone=browser&viewPanel=panel-3&theme=light&kiosk&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: 2 Graphs -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-md-6 graph-col">
+                        <div class="bg-light text-center rounded p-4">
+                            <h6 class="mb-3">SpO2 Graph <a href="http://localhost:3000/d/adql66s/ppg-patient-monitor?viewPanel=panel-10&orgId=1" target="_blank" class="ms-2 text-primary" title="Open in Grafana" style="font-size: 12px;"><i class="fa fa-external-link-alt"></i></a></h6>
+                            <div class="graph-placeholder" style="height: 550px;">
+                                <iframe src="http://localhost:3000/d/adql66s/ppg-patient-monitor?orgId=1&from=1776220251050&to=1776241851050&timezone=browser&viewPanel=panel-10&theme=light&kiosk&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 graph-col">
+                        <div class="bg-light text-center rounded p-4">
+                            <h6 class="mb-3">Heart Rate Trend <a href="http://localhost:3000/d/adql66s/ppg-patient-monitor?viewPanel=panel-9&orgId=1" target="_blank" class="ms-2 text-primary" title="Open in Grafana" style="font-size: 12px;"><i class="fa fa-external-link-alt"></i></a></h6>
+                            <div class="graph-placeholder" style="height: 550px;">
+                                <iframe src="http://localhost:3000/d/adql66s/ppg-patient-monitor?orgId=1&from=1776220251050&to=1776241851050&timezone=browser&viewPanel=panel-9&theme=light&kiosk&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widgets Section -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <!-- Patient Information -->
+                    <div class="col-sm-12 col-md-6 col-xl-4 no-print">
+                        <div class="h-100 bg-light rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0"><i class="fa fa-user-circle text-primary me-2"></i>Patient Information</h6>
+                            </div>
+                            <div class="d-flex align-items-center border-bottom py-2">
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0" style="font-size: 13px;">Name:</h6>
+                                        <span id="patientName" style="font-size: 13px;">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center border-bottom py-2">
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0" style="font-size: 13px;">Patient ID:</h6>
+                                        <span id="patientID" style="font-size: 13px;">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- New Fields for Clinical Data -->
+                            <div class="d-flex align-items-center border-bottom py-2">
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0" style="font-size: 13px;">Weight:</h6>
+                                        <span id="patientWeight" style="font-size: 13px;">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center border-bottom py-2">
+                                <div class="w-100 ms-3">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-0" style="font-size: 13px;">Height:</h6>
+                                        <span id="patientHeight" style="font-size: 13px;">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6 class="mb-1" style="font-size: 13px;">Reported Symptoms:</h6>
+                                <p id="patientSymptoms" class="small text-muted mb-0" style="font-size: 12px; line-height: 1.4;">--</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Calendar -->
+                    <div class="col-sm-12 col-md-6 col-xl-4 no-print">
+                        <div class="h-100 bg-light rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0"><i class="fa fa-calendar-alt text-primary me-2"></i>Calendar</h6>
+                            </div>
+                            <div id="calender"></div>
+                        </div>
+                    </div>
+                    <!-- Doctor's Notes -->
+                    <div class="col-sm-12 col-md-6 col-xl-4 no-print">
+                        <div class="h-100 bg-light rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h6 class="mb-0"><i class="fa fa-pen-nib text-primary me-2"></i>Doctor's Notes</h6>
+                            </div>
+                            <textarea id="doctorNotes" class="form-control bg-white border-0 mb-3" rows="8" style="resize:none; font-size:14px; padding: 15px;" placeholder="Type clinical observations here..."></textarea>
+                            <div id="doctorNotesPrint"></div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small id="lastSaved" class="text-muted" style="font-size:11px;">Last saved: No history yet</small>
+                                <button id="saveBtn" class="btn btn-primary btn-sm px-3">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="container-fluid pt-4 px-4 footer">
+                <div class="bg-light rounded-top p-4">
+                    <div class="row">
+                        <div class="col-12 col-sm-6 text-center text-sm-start">
+                            &copy; DHADAK Dashboard
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    
+    <script>
+        function prepareAndPrint() {
+            // 1. DATA PREPARATION for printable form
+            const name = document.getElementById("patientName").innerText;
+            const id = document.getElementById("patientID").innerText;
+            const notes = document.getElementById("doctorNotes").value;
+            const now = new Date();
+            const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+            // Fill Form Fields
+            document.getElementById("form-patient-name").innerText = name;
+            document.getElementById("form-patient-id").innerText = id;
+            document.getElementById("form-date").innerText = dateStr;
+            document.getElementById("form-notes").innerText = notes || "No additional observations.";
+
+            // Dashboard View Preparation
+            const printDiv = document.getElementById("doctorNotesPrint");
+            if (printDiv) {
+                printDiv.innerText = notes || "No clinical notes provided.";
+            }
+
+            // 2. TRIGGER EXTERNAL PDF (Opens in new tab)
+            // Replace the URL below with your actual external PDF link
+            const externalPdfUrl = 'YOUR_EXTERNAL_PDF_LINK_HERE'; 
+            if (externalPdfUrl !== 'YOUR_EXTERNAL_PDF_LINK_HERE') {
+                window.open(externalPdfUrl, '_blank');
+            }
+
+            // 3. TRIGGER CURRENT DASHBOARD PRINT
+            window.print();
+        }
+
+        // Keep existing generatePDF as a backup
+        function generatePDF() {
+            const dashboardUrl = 'http://localhost:3000/d/adql66s/ppg-patient-monitor';
+            const pdfUrl = `${dashboardUrl}?kiosk&render=pdf`;
+            window.open(pdfUrl, '_blank');
+        }
+
+        const selectedPatient = JSON.parse(localStorage.getItem("selectedPatient") || '{}');
+        const patientId = selectedPatient.id || "default";
+        const PATIENT_KEY = "doctorNotes_v2_" + patientId;
+        const HIGHLIGHT_KEY = "note_highlights_v2_" + patientId;
+
+        const textarea = document.getElementById("doctorNotes");
+        const saveBtn = document.getElementById("saveBtn");
+        const lastSaved = document.getElementById("lastSaved");
+
+        // Set Patient Info
+        document.getElementById("patientName").innerText = selectedPatient.name || "Unknown";
+        document.getElementById("patientID").innerText = patientId;
+
+        // Load Clinical Data from Patient Form
+        const clinicalData = JSON.parse(localStorage.getItem("patient_data_" + patientId) || '{}');
+        if (clinicalData.weight) {
+            document.getElementById("patientWeight").innerText = clinicalData.weight + " kg";
+            document.getElementById("patientHeight").innerText = clinicalData.height + " cm";
+            document.getElementById("patientSymptoms").innerText = clinicalData.symptoms || "No symptoms reported.";
+        }
+
+        // Load Notes
+        const saved = localStorage.getItem(PATIENT_KEY);
+        if (saved) {
+            const data = JSON.parse(saved);
+            textarea.value = data.text;
+            lastSaved.innerText = "Last saved: " + data.time;
+        }
+
+        // Calendar Initialization & Highlighting Logic
+        let highlightDates = JSON.parse(localStorage.getItem(HIGHLIGHT_KEY) || "[]");
+
+        $(function () {
+            $('#calender').datetimepicker({
+                inline: true,
+                format: 'L',
+                icons: {
+                    previous: 'fa fa-chevron-left',
+                    next: 'fa fa-chevron-right',
+                }
+            });
+
+            // Function to apply highlights
+            function applyHighlights() {
+                highlightDates.forEach(dateStr => {
+                    // This is a simplified approach; Tempus Dominus v5/v6 highlighting can be complex.
+                    // We'll use a CSS-based approach by finding the day element.
+                    const date = moment(dateStr, 'MM/DD/YYYY');
+                    const timestamp = date.startOf('day').valueOf();
+                    $(`td.day[data-day="${date.format('MM/DD/YYYY')}"]`).addClass('bg-primary text-white rounded-circle');
+                });
+            }
+
+            // Re-apply highlights when calendar view changes
+            $('#calender').on('update.datetimepicker', function() {
+                setTimeout(applyHighlights, 10);
+            });
+            
+            setTimeout(applyHighlights, 100);
+        });
+
+        // Save Logic
+        saveBtn.addEventListener("click", function() {
+            const now = new Date();
+            const dateStr = (now.getMonth() + 1) + '/' + now.getDate() + '/' + now.getFullYear();
+            const timeStr = now.toLocaleTimeString();
+            const dateTime = dateStr + " " + timeStr;
+            
+            localStorage.setItem(PATIENT_KEY, JSON.stringify({ text: textarea.value, time: dateTime }));
+            lastSaved.innerText = "Last saved: " + dateTime;
+
+            // Update Highlight Dates
+            if (!highlightDates.includes(dateStr)) {
+                highlightDates.push(dateStr);
+                localStorage.setItem(HIGHLIGHT_KEY, JSON.stringify(highlightDates));
+            }
+
+            // Visual feedback on calendar
+            $(`td.day[data-day="${dateStr}"]`).addClass('bg-primary text-white rounded-circle');
+            
+            // Optional: visual feedback for button
+            const originalText = saveBtn.innerText;
+            saveBtn.innerText = "Saved!";
+            saveBtn.classList.replace('btn-primary', 'btn-success');
+            setTimeout(() => {
+                saveBtn.innerText = originalText;
+                saveBtn.classList.replace('btn-success', 'btn-primary');
+            }, 2000);
+        });
+
+        // --- GRAFANA TIME RANGE LOGIC ---
+        let currentFrom = 'now-6h';
+        let currentTo = 'now';
+
+        function updateTimeRange(from, to, label) {
+            currentFrom = from;
+            currentTo = to;
+            
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                try {
+                    let src = iframe.src;
+                    if (src.includes('localhost:3000')) {
+                        let url = new URL(src);
+                        url.searchParams.set('from', from);
+                        url.searchParams.set('to', to);
+                        iframe.src = url.toString();
+                    }
+                } catch (e) {
+                    console.error("Error updating iframe src:", e);
+                }
+            });
+
+            // Optional: Update the dropdown button text to show current range
+            if (label) {
+                const dropBtn = document.querySelector('.nav-item.dropdown .dropdown-toggle');
+                if (dropBtn) {
+                    dropBtn.innerHTML = `<i class="fa fa-clock me-2"></i>${label}`;
+                }
+            }
+        }
+
+        function zoomOut() {
+            if (currentFrom.startsWith('now-')) {
+                let match = currentFrom.match(/now-(\d+)([hdm])/);
+                if (match) {
+                    let val = parseInt(match[1]);
+                    let unit = match[2];
+                    // Cap it at a reasonable limit, e.g., 30 days
+                    let newVal = val * 2;
+                    if (unit === 'd' && newVal > 30) newVal = 30;
+                    if (unit === 'h' && newVal > 24) {
+                        newVal = Math.round(newVal / 24);
+                        unit = 'd';
+                    }
+                    updateTimeRange(`now-${newVal}${unit}`, 'now', `Last ${newVal}${unit}`);
+                }
+            } else {
+                updateTimeRange('now-24h', 'now', 'Last 24 Hours');
+            }
+        }
+
+        // Initialize with dynamic relative time on load
+        window.addEventListener('load', () => {
+            setTimeout(() => updateTimeRange('now-6h', 'now', 'Last 6 Hours'), 500);
+        });
+    </script>
+</body>
+
+</html>now-6h', 'now', 'Last 6 Hours'), 500);
+        });
+    </script>
+</body>
+
+</html>

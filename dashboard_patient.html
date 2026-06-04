@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Patient Dashboard - DHADAK</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --info: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Heebo', sans-serif;
+            font-size: 1.25rem;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background-color: white !important;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 10px 25px;
+        }
+
+        .section-bg {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .vital-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .gauge-container {
+            height: 180px;
+            background: #f8fafc;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .vital-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .vital-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .card-header-custom {
+            font-weight: 800;
+            color: var(--dark);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Breathing Exercise Styles */
+        .breathing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle-wrap {
+            width: 100px;
+            height: 100px;
+            background: #eff6ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .circle {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            transition: all 4s ease-in-out;
+        }
+
+        .circle.expand {
+            width: 90px;
+            height: 90px;
+        }
+
+        /* Affirmation Styling */
+        .affirmation-box {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .nav-btn {
+            font-weight: 600;
+            padding: 6px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-report {
+            background-color: white;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+
+        .btn-report:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-logout {
+            background-color: white;
+            color: var(--danger);
+            border: 1.5px solid var(--danger);
+        }
+
+        .btn-logout:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .doc-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .doc-icon {
+            background: #eff6ff;
+            color: var(--primary);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media print {
+            .navbar, #startBreathing, .video-placeholder, .breathing-text, .circle-wrap, .chatbot-icon {
+                display: none !important;
+            }
+            .section-bg, .vital-card {
+                border: 1px solid #ccc !important;
+                break-inside: avoid;
+            }
+            body { background: white; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid p-0">
+        <!-- Navbar Start -->
+        <nav class="navbar navbar-expand px-4">
+            <a href="#" class="navbar-brand">
+                <h3 class="text-primary fw-bold mb-0">DHADAK</h3>
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                <span class="me-3 d-none d-lg-inline text-muted" id="welcomeUser" style="font-size: 0.95rem;">Welcome, Patient</span>
+                <a href="#" class="nav-btn btn-report" onclick="window.print()">
+                    <i class="fas fa-file-pdf me-1"></i> Report
+                </a>
+                <a href="index.html" class="nav-btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </nav>
+
+        <div class="container-fluid pt-4 px-4">
+            <!-- Row 1: Vitals Gauges (Equalized) -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="vital-card">
+                        <div class="vital-label">Signal Quality</div>
+                        <div class="gauge-container">
+                            <iframe src="http://localhost:3000/d-solo/adql66s/ppg-patient-monitor?orgId=1&from=1776219901860&to=1776241501860&timezone=browser&panelId=panel-5&theme=light&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                        </div>
+                        <div class="vital-value" id="val-sq">--</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="vital-card">
+                        <div class="vital-label">Heart Rate</div>
+                        <div class="gauge-container">
+                            <iframe src="http://localhost:3000/d-solo/adql66s/ppg-patient-monitor?orgId=1&from=1776219901860&to=1776241501860&timezone=browser&panelId=panel-5&theme=light&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                        </div>
+                        <div class="vital-value" id="val-hr">--</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="vital-card">
+                        <div class="vital-label">Blood Oxygen (SpO2)</div>
+                        <div class="gauge-container">
+                            <iframe src="http://localhost:3000/d-solo/adql66s/ppg-patient-monitor?orgId=1&from=1776219901860&to=1776241501860&timezone=browser&panelId=panel-3&theme=light&__feature.dashboardScene=true" width="100%" height="100%" frameborder="0"></iframe>
+                        </div>
+                        <div class="vital-value" id="val-spo2">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: Wellness & Doctor (Equalized) -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="section-bg">
+                        <div class="card-header-custom">Daily Affirmation</div>
+                        <div class="affirmation-box">
+                            <span id="affirmationText">"My heart is strong, and my breath is steady."</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="section-bg">
+                        <div class="card-header-custom">Relax & Breathe</div>
+                        <div class="breathing-container">
+                            <div class="circle-wrap">
+                                <div class="circle" id="breathingCircle"></div>
+                            </div>
+                            <div id="breathingStatus" style="font-size: 1rem; font-weight: 700; color: var(--primary);">Ready?</div>
+                            <button class="btn btn-sm btn-primary mt-2 px-4" id="startBreathing">START</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="section-bg">
+                        <div class="card-header-custom">Treating Doctor</div>
+                        <div class="doc-profile">
+                            <div class="doc-icon">
+                                <i class="fas fa-user-md fa-xl"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Dr. Dhanush S</h6>
+                                <p class="small text-muted mb-1">Cardiologist</p>
+                                <p class="small fw-bold mb-0 text-primary">7822085564</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Device Guide (Wide but compact) -->
+            <div class="row g-4 no-print">
+                <div class="col-12">
+                    <div class="section-bg">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="card-header-custom text-start">Device Instructions</div>
+                                <div style="max-width: 1280px"><div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"><iframe src="https://fcrit-my.sharepoint.com/personal/3024121_extc_fcrit_ac_in/_layouts/15/embed.aspx?UniqueId=f692bd57-a9a4-4378-93e0-cf438bb20641&nav=%7B%22playbackOptions%22%3A%7B%22startTimeInSeconds%22%3A0%7D%7D&embed=%7B%22af%22%3Atrue%2C%22ust%22%3Atrue%2C%22hv%22%3A%22CopyEmbedCode%22%7D&referrer=StreamWebApp&referrerScenario=EmbedDialog.Create" width="1280" height="720" frameborder="0" scrolling="no" allowfullscreen title="miniproject.mp4" style="border:none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; height: 100%; max-width: 100%;"></iframe></div></div>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0 mt-3 mt-md-0" style="font-size: 1rem;">
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Place sensor on your index finger</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Keep your hand steady and at rest</li>
+                                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Sit in a comfortable, relaxed position</li>
+                                    <li><i class="fas fa-check-circle text-success me-2"></i>Wait 30 seconds for stable readings</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="container-fluid pt-4 px-4 pb-4">
+            <div class="text-center text-muted border-top pt-3">
+                <small>DHADAK Tele-Monitoring System | Professional Patient Portal</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Set Patient Name
+        const selectedPatient = JSON.parse(localStorage.getItem("selectedPatient") || '{"name": "Patient"}');
+        document.getElementById('welcomeUser').innerText = "Welcome, " + selectedPatient.name;
+
+        // Vitals Fetching Logic
+        const S3_URL = 'https://ppg-monitoring-data.s3.ap-south-1.amazonaws.com/processed/latest.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAS5PYWXHAHUU7Q43T%2F20260415%2Fap-south-1%2Fs3%2Faws4_request&X-Amz-Date=20260415T114915Z&X-Amz-Expires=300&X-Amz-Security-Token=IQoJb3JpZ2luX2VjENz%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCmFwLXNvdXRoLTEiRzBFAiEA16yEV3hXJRZadmcQGrjtlYd8QXcaH6c5W5nRyc8dop0CIFy7LYALSeiL8YD6iwDRzUMcD3CYumXHp551BPf%2BsD%2BQKvgCCKX%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMMjAwNzc0NDMzMjE2IgyBJoDoy6vA50Wa0%2FYqzALX4ccX%2FAhCN30toYEtWQzqEnvsM06WSXGehTnIvftEV%2FbO9bY83XUhabYExquP1ZVL823vuOnoWdHSPr%2BnbxIxqzj1lDOW0LrTNqBf%2By4iXD70IPsRsv6R2Zt4zoTU%2FU0BFyVxHahQKQQQ8cn7l61l1JJvP6eNzKBsF7B0uu3evuuTKddrYUiXm1h3BqmAk6E%2Bv8N3v1RvykdjMhpq3jDHK7PNQoo1gaEtEXE0Y5ZzETFovYqYRvuXLUJle6Q8fn6HUz8IcYpVdJkLAhe69I7VFsqcKHmQG94jl625NGNvdA8QnQXn18pBdAwBmXG8PGQK8mbs3wy6W4vdRKSEIWJLefd%2BdPiCiSi6%2B3mF2x6%2FnNiSdTwdRwgXkvQGtkIXTW%2FxXNJigmTEA327onYJBriMngIoAA7OPTbbfYzxBeVzsFD%2Bh%2BjFli3ZUs7JtDCWvf3OBjqtAvXlF0fL9AIfLoOB4pQXHMjcLQxMZnJGBVDiNC%2BlweqdMgjrV3mbBK1uT2FMeCYENgvTydcgU5eZ5L4oDRU%2BgnVmKsEI0NT6px%2BZqGBjegxVNQmgxxpy8%2F0tXTnoFoTiPk3lZ%2BjWyM2Ja%2F50W1UdMRMrLOmovbNRszZeOpg0uC4%2FuGThtnC6aC1x%2BKDooG8GJ8MLv2pr958LcYlpVZ4iueX9BBNBuqGLbCDGiW1bQj3G5PVJ%2FB2FfRrJEQFeZSzZS5MSN1IcINy%2BdepSPdcUsC8N9zaqJhQz4jDprz3pj%2FUv31Lu7v7Ic5%2F5yH3YIGomhGNZtdCPONLCKQwzka82PAAesOz3IzlSjHIgO75sJK8KUyusVTmPoShV7hnrLam1KrYxLRjMIgjGS94bjJE%3D&X-Amz-Signature=9bc358bd9c4dba990dbbee800b252b3ae4de52bbde5f8323fde62e47e52bd7ae&X-Amz-SignedHeaders=host&response-content-disposition=inline';
+
+        async function updateVitals() {
+            try {
+                const response = await fetch(S3_URL);
+                const data = await response.json();
+                
+                document.getElementById('val-hr').innerText = data.heart_rate;
+                document.getElementById('val-spo2').innerText = data.spo2;
+                document.getElementById('val-sq').innerText = data.signal_quality;
+            } catch (error) {
+                console.error('Error fetching vitals:', error);
+            }
+        }
+
+        setInterval(updateVitals, 20000);
+        updateVitals();
+
+        // Affirmation Logic
+        const affirmations = [
+            "My heart is strong, and my breath is steady.",
+            "I am in control of my health and my peace.",
+            "Every breath I take nourishes my body.",
+            "I am safe, I am calm, and I am healing.",
+            "I choose to focus on my recovery today."
+        ];
+        let affIdx = 0;
+        setInterval(() => {
+            affIdx = (affIdx + 1) % affirmations.length;
+            $('#affirmationText').fadeOut(500, function() {
+                $(this).text('"' + affirmations[affIdx] + '"').fadeIn(500);
+            });
+        }, 8000);
+
+        // Breathing Exercise Logic
+        const circle = document.getElementById('breathingCircle');
+        const status = document.getElementById('breathingStatus');
+        const startBtn = document.getElementById('startBreathing');
+        let breathingInterval;
+        let isRunning = false;
+
+        startBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                isRunning = true;
+                startBtn.innerText = "STOP";
+                startBtn.classList.replace('btn-primary', 'btn-danger');
+                runBreathing();
+            } else {
+                isRunning = false;
+                clearInterval(breathingInterval);
+                startBtn.innerText = "START";
+                startBtn.classList.replace('btn-danger', 'btn-primary');
+                status.innerText = "Ready?";
+                circle.classList.remove('expand');
+            }
+        });
+
+        function runBreathing() {
+            let step = 0;
+            const cycle = () => {
+                if (step === 0) {
+                    status.innerText = "Inhale...";
+                    circle.classList.add('expand');
+                    step = 1;
+                } else {
+                    status.innerText = "Exhale...";
+                    circle.classList.remove('expand');
+                    step = 0;
+                }
+            };
+            cycle();
+            breathingInterval = setInterval(cycle, 4000);
+        }
+
+        // Chatbot Embed
+        (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="q3mT33786ysXCTe22qldg";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+    </script>
+</body>
+</html>

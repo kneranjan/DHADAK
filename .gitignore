@@ -1,0 +1,15 @@
+# Node modules
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.log
+*.tmp
+
+# AWS Amplify / IDE
+.amplify/
+.vscode/
+.idea/

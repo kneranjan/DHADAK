@@ -1,0 +1,117 @@
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Heebo', sans-serif; }
+  body { background: #f4f7ff; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .page-bg { min-height: 100vh; padding: 2rem; }
+
+  /* Header & Search */
+  .select-header { text-align: left; margin-bottom: 2rem; }
+  .select-header h2 { font-size: 24px; color: #2c3e50; }
+  
+  .action-bar { display: flex; gap: 12px; max-width: 600px; margin: 0 auto 2rem; }
+  .search-bar { flex: 1; }
+  .search-bar input { width: 100%; padding: 12px; border: 1px solid #dcdfe6; border-radius: 8px; font-size: 14px; }
+  
+  .btn-primary { background: #4154f1; color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: 500; cursor: pointer; }
+  .btn-secondary { background: #fff; color: #4154f1; border: 1px solid #4154f1; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+
+  /* Grid & Cards */
+  .patient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; }
+  .patient-card { background: white; border-radius: 12px; padding: 1.5rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s; text-align: center; }
+  .patient-card:hover { transform: translateY(-3px); border-color: #4154f1; }
+  
+  .avatar { width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .status-badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; text-transform: uppercase; }
+  .status-critical { background: #ffebeb; color: #d63031; }
+  .status-stable { background: #e3f9e5; color: #27ae60; }
+  .status-monitoring { background: #fff4e5; color: #f39c12; }
+
+  /* Dashboard View */
+  .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eee; }
+  .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 30px; max-width: 1200px; margin: 0 auto; }
+  .metric-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); text-align: center; }
+  .mlabel { color: #7f8c8d; font-size: 13px; margin-bottom: 10px; font-weight: 500; }
+  .mvalue { font-size: 28px; font-weight: 700; color: #2c3e50; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 100; }
+  .modal-content { background: white; padding: 2rem; border-radius: 12px; width: 400px; }
+  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; font-size: 12px; margin-bottom: 5px; color: #666; }
+  .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+</style>
+
+<div id="selectScreen" class="screen active">
+  <div class="page-bg">
+    <div class="select-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+      <div>
+        <h2 style="color: #4154f1; font-weight: 800;">DHADAK</h2>
+        <p>Real-time patient vitals monitoring</p>
+      </div>
+      <button class="btn-secondary" onclick="window.location.href='index.html'">Logout</button>
+    </div>
+    
+    <div class="action-bar">
+      <div class="search-bar" style="flex: 1;">
+        <input type="text" id="searchInput" placeholder="Search patient name..." oninput="filterPatients()" />
+      </div>
+    </div>
+
+    <div id="patientGrid" class="patient-grid"></div>
+  </div>
+</div>
+
+<script>
+let staticPatients = [
+  { id: "P-101", name: "Aarav Mehta", hr: 112, spo2: "91%", bp: "150/95", page: "dashboard_doctor.html" },
+  { id: "P-102", name: "Priya Sharma", hr: 74, spo2: "98%", bp: "118/76", page: "dashboard_doctor.html" },
+  { id: "P-103", name: "Rajan Verma", hr: 88, spo2: "95%", bp: "135/88", page: "dashboard_doctor.html" }
+];
+
+// Load dynamic patients
+let dynamicPatients = JSON.parse(localStorage.getItem("dynamic_patients") || "[]").map(p => ({
+  ...p,
+  hr: 80, spo2: "97%", bp: "120/80", page: "dashboard_doctor.html" // Defaulting to dashboard_doctor.html for now
+}));
+
+let patients = [...staticPatients, ...dynamicPatients];
+
+const colors = [{bg:"#e3f2fd", text:"#1565c0"}, {bg:"#f3e5f5", text:"#7b1fa2"}, {bg:"#e8f5e9", text:"#2e7d32"}];
+
+function initials(n) { return n.split(" ").map(i => i[0]).join("").toUpperCase(); }
+
+function renderCards(data) {
+  const grid = document.getElementById("patientGrid");
+  grid.innerHTML = "";
+
+  data.forEach((p, i) => {
+    const c = colors[i % colors.length];
+    const card = document.createElement("div");
+    card.className = "patient-card";
+
+    card.innerHTML = `
+      <div class="avatar" style="background:${c.bg}; color:${c.text}">${initials(p.name)}</div>
+      <h4 style="margin-bottom:5px;">${p.name}</h4>
+      <div style="color:#95a5a6; font-size:12px; margin-bottom:12px;">ID: ${p.id}</div>
+    `;
+
+    card.onclick = () => {
+      localStorage.setItem("selectedPatient", JSON.stringify(p));
+      window.location.href = p.page;
+    };
+
+    grid.appendChild(card);
+  });
+};
+
+function filterPatients() {
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  renderCards(patients.filter(p => p.name.toLowerCase().includes(q)));
+}
+
+renderCards(patients);
+</script>
+
+ 
