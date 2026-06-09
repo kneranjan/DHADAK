@@ -49,7 +49,9 @@ Data from lambda is also sent to grafana to have accurate and realtime visualiza
 
 ## Challenges (resolved)
 All data was being stored within one bucket without any proper timestamps
+<br>
 Hit and trial across various filters
+<br>
 Making the code memory and optimized when shifting from esp32 to esp8266 to save money.
 
 
