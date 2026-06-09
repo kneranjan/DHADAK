@@ -62,10 +62,11 @@ Making the code memory and optimized when shifting from esp32 to esp8266 to save
 - AWS account with IoT Core, Lambda, S3, SNS, CloudWatch configured
 - ESP8266 with MAX30102 sensor (hardware component)
 - Grafana instance for visualization
-- Web server or AWS Amplify for frontend deployment
+- Web server or AWS Amplify for frontend deployment 
+- Upload and compile the practicec.ino file on esp8266  
+- change (add) required credentials in secrets.h 
+- change the SSID and password appropriately.
 
 Note: This is a full system project. 
 Frontend demo can be viewed by opening index.html directly in browser.
 
-
-NOTE: ESP8266 CODE BY NEXT WEEK.
